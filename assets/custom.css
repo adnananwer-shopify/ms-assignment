@@ -1,0 +1,70 @@
+.cart-drawer__extras {
+    margin-bottom: 20px;
+}
+
+.cart-drawer__extras {
+  padding: 1rem 0;
+  background-color: #fafafa;
+  margin-top: 1rem;
+  font-family: sans-serif;
+  font-size: 14px;
+}
+
+.cart-drawer__extras label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  cursor: pointer;
+}
+
+.cart-drawer__extras input[type="checkbox"] {
+  transform: scale(1.2);
+}
+
+#giftMessageWrapper {
+  margin-left: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+#giftMessageWrapper input[type="text"] {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 13px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-top: 0.25rem;
+}
+
+textarea#giftMessage {
+    resize: none;
+    width: 100%;
+    padding: 10px;
+    font-size: 12px;
+    font-family: var(--font-body-family);
+}
+
+*{
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.drawer__cart-items-wrapper [data-handle="gift-wrapping"] quantity-input.quantity.cart-quantity,
+.drawer__cart-items-wrapper [data-handle="secured-shipping"] quantity-input.quantity.cart-quantity,
+.drawer__cart-items-wrapper [data-handle="free-sample"] quantity-input.quantity.cart-quantity{
+    display: none;
+}
+
+.drawer__cart-items-wrapper [data-handle="gift-wrapping"] cart-remove-button,
+.drawer__cart-items-wrapper [data-handle="secured-shipping"] cart-remove-button
+.drawer__cart-items-wrapper [data-handle="free-sample"] cart-remove-button{
+  margin: 0;
+}
+
+@media (max-width: 490px){
+  a.product-card__button-custom.button {
+    font-size: 12px;
+    padding: 0;
+      min-width: auto;
+  }
+}

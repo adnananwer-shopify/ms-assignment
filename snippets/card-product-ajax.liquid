@@ -1,0 +1,158 @@
+<div class="product-card-custom" data-product-id="{{ card_product.id }}">
+  <img
+    src="{{ card_product.featured_image | img_url:'400x' }}"
+    alt="{{ card_product.title }}"
+    class="product-card__image-custom"
+    loading="lazy"
+    width="400"
+    height="auto"
+  >
+
+  <h2 class="product-card__title-custom">{{ card_product.title }}</h2>
+  <p class="product-card__price-custom">{{ card_product.price | money }}</p>
+
+  {% if card_product.variants.size > 1 %}
+    <select name="id" class="product-card__select-custom" aria-label="Select variant">
+      {% for variant in card_product.variants %}
+        <option value="{{ variant.id }}">{{ variant.title }}</option>
+      {% endfor %}
+    </select>
+  {% else %}
+    <input type="hidden" name="id" value="{{ card_product.variants.first.id }}">
+  {% endif %}
+
+  {%- assign product_form_id = 'product-form-' | append: card_product.id -%}
+
+  {%- form 'product',
+    card_product,
+    id: product_form_id,
+    class: 'form',
+    novalidate: 'novalidate',
+    data-type: 'add-to-cart-form'
+  -%}
+    {% liquid
+      assign current_template = collection.template_suffix
+      assign sample_product = null
+      if shop.metaobjects.collection_template_rules[current_template]
+        assign sample_product = shop.metaobjects.collection_template_rules[current_template].sample_product.value
+      endif
+    %}
+
+    {% if sample_product != null %}
+      <input
+        type="hidden"
+        name="items[0][id]"
+        value="{{ card_product.selected_or_first_available_variant.id }}"
+        class="product-variant-id"
+      >
+      <input type="hidden" name="items[0][properties][_source_template]" value="{{ collection.template_suffix }}">
+      <input
+        type="hidden"
+        name="items[1][id]"
+        value="{{ sample_product.selected_or_first_available_variant.id }}"
+        class="product-variant-id"
+      >
+      <input
+        type="hidden"
+        name="items[1][properties][_source_template]"
+        value="{{ collection.template_suffix }}"
+      >
+      <input name="free-sample" type="hidden" value="{{ sample_product.selected_or_first_available_variant.id }}">
+    {% else %}
+      <input
+        type="hidden"
+        name="id"
+        value="{{ card_product.selected_or_first_available_variant.id }}"
+        class="product-variant-id"
+      >
+      <input type="hidden" name="properties[_source_template]" value="{{ collection.template_suffix }}">
+    {% endif %}
+    <a
+      href="{{ card_product.url }}"
+      class="product-card__button-custom button"
+      role="button"
+      aria-label="Add {{ card_product.title }} to cart"
+      data-variant-id="{{ card_product.variants.first.id }}"
+    >
+      Add to Cart
+    </a>
+  {%- endform -%}
+</div>
+
+<style>
+  /* Basic styling for the product card */
+  .product-card-custom {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    margin: 1rem;
+    background-color: #fff;
+    border-radius: 8px;
+  }
+
+  .product-card__image-custom {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+  }
+
+  .product-card__title-custom {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin: 1rem 0 0.5rem;
+  }
+
+  .product-card__price-custom {
+    font-size: 1.1rem;
+    color: #333;
+    margin-bottom: 1rem;
+  }
+
+  /* Variant selector */
+  .product-card__select-custom {
+    padding: 0.5rem;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+
+  /* Button styling */
+
+  .product-card__button-custom:disabled {
+    pointer-events: none;
+    cursor: not-allowed;
+  }
+
+  .product-card__button--loading-custom {
+    pointer-events: none;
+    opacity: 0.6;
+  }
+
+  /* Accessibility: Focus styles */
+  .product-card__button-custom:focus {
+    outline: 2px solid #0056b3;
+    outline-offset: 4px;
+  }
+
+  /* Message display (loading/added/error) */
+  .product-card__message-custom {
+    text-align: center;
+    font-size: 1rem;
+    margin-top: 1rem;
+    color: green;
+  }
+
+  .product-card__message-custom.error {
+    color: red;
+  }
+
+  .product-card-custom {
+    width: 100%;
+  }
+
+  a.product-card__button-custom.button {
+    width: 100%;
+  }
+</style>
