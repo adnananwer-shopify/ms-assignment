@@ -1449,6 +1449,16 @@
         "id": "cart_color_scheme",
         "label": "t:sections.all.colors.label",
         "default": "scheme-1"
+      },
+      {
+        "type": "product",
+        "label": "Gift Wrapping Product",
+        "id": "gift_wrapping"
+      },
+      {
+        "type": "product",
+        "label": "Secured Shipping Product",
+        "id": "secured_shipping"
       }
     ]
   }

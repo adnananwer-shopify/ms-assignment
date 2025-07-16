@@ -5,6 +5,15 @@
   {% render 'cart-drawer' %}
 {% endcomment %}
 
+{% liquid
+  assign offer_addons = false
+  assign offer_addons = false
+  assign secured_shipping_added = false
+  assign gift_wrap_added = false
+  assign s_shipping = all_products[settings.gift_wrapping]
+  assign s_gift = all_products[settings.secured_shipping]
+%}
+
 {{ 'quantity-popover.css' | asset_url | stylesheet_tag }}
 {{ 'component-card.css' | asset_url | stylesheet_tag }}
 
@@ -118,6 +127,26 @@
 
                   <tbody role="rowgroup">
                     {%- for item in cart.items -%}
+                      {% liquid
+                        if item.product.id == s_shipping.id
+                          assign secured_shipping_added = true
+                        endif
+
+                        if item.product.id == s_gift.id
+                          assign gift_wrap_added = true
+                        endif
+
+                        for collection in item.product.collections
+                          assign c_handle = collection.handle
+                          if shop.metaobjects.collection_template_rules[c_handle]
+                            assign offer_addons = true
+                            assign offer_gift_wrapping = shop.metaobjects.collection_template_rules[c_handle].gift_wrapping.value
+                            assign offer_secured_shipping = shop.metaobjects.collection_template_rules[c_handle].secured_shipping.value
+                            break
+                          endif
+                        endfor
+                      %}
+
                       <tr
                         id="CartDrawer-Item-{{ item.index | plus: 1 }}"
                         class="cart-item{% if item.parent_relationship.parent != null %} cart-item__nested-line{% endif %}"
@@ -258,7 +287,10 @@
                             {%- endif -%}
 
                             {%- if item.variant.available and item.unit_price_measurement -%}
-                              {% render 'unit-price', price: item.unit_price, measurement: item.unit_price_measurement %}
+                              {% render 'unit-price',
+                                price: item.unit_price,
+                                measurement: item.unit_price_measurement
+                              %}
                             {%- endif -%}
                           </div>
                         </td>
@@ -475,6 +507,45 @@
         </form>
       </cart-drawer-items>
       <div class="drawer__footer">
+        {% if offer_addons == true %}
+          {% if gift_wrap_added == false or secured_shipping_added == false %}
+            <div class="cart-drawer__extras">
+              {% if offer_gift_wrapping and gift_wrap_added != true %}
+                <div class="cart-drawer__gift">
+                  <label>
+                    <input type="checkbox" id="addGiftWrap">
+                    Gift Wrapping ({{ s_gift.selected_or_first_available_variant.price | money }})
+                  </label>
+                  <div id="giftMessageWrapper" style="display:none;">
+                    <textarea type="text" id="giftMessage" placeholder="Customizable Message..."></textarea>
+                    <button
+                      id="giftMessageWrapperBtn"
+                      class="button"
+                      data-template-source="{{ c_handle }}"
+                      data-gift-product="{{ s_gift.selected_or_first_available_variant.id }}"
+                    >
+                      Add
+                    </button>
+                  </div>
+                </div>
+              {% endif %}
+              {% if offer_secured_shipping and secured_shipping_added != true %}
+                <div class="cart-drawer__secured-shipping">
+                  <label>
+                    <input
+                      type="checkbox"
+                      id="securedShipping"
+                      data-template-source="{{ c_handle }}"
+                      name="properties[Secured Shipping]"
+                      value="{{ s_shipping.selected_or_first_available_variant.id }}"
+                    >
+                    Add Secured Shipping ({{ s_shipping.selected_or_first_available_variant.price | money }})
+                  </label>
+                </div>
+              {% endif %}
+            </div>
+          {% endif %}
+        {% endif %}
         {%- if settings.show_cart_note -%}
           <details id="Details-CartDrawer">
             <summary>
